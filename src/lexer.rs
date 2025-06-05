@@ -15,8 +15,8 @@ pub enum Tokens {
     Variable(String),
     #[regex(r"[+\-*/^=]", which_operation)]
     Operation(Option<Operations>),
-    #[regex(r"[A-Za-z]+\([A-Za-z0-9+\-*/^= ]*\)", |lex| lex.slice().to_string())]
-    Function(String)
+    #[regex(r"[\(\)]", |lex| lex.slice().to_string())]
+    Paranthesis(String)
 }
 #[derive(Debug, PartialEq)]
 pub enum Operations {
@@ -59,7 +59,10 @@ pub mod tests {
     #[test]
     pub fn test_lexer_2() {
         let mut lex = Tokens::lexer("f(x) = 5x^2 + 3 - 4");
-        assert_eq!(lex.next(), Some(Ok(Tokens::Function(string!("f(x)")))));
+        assert_eq!(lex.next(), Some(Ok(Tokens::Variable(string!("f")))));
+        assert_eq!(lex.next(), Some(Ok(Tokens::Paranthesis(string!("(")))));
+        assert_eq!(lex.next(), Some(Ok(Tokens::Variable(string!("x")))));
+        assert_eq!(lex.next(), Some(Ok(Tokens::Paranthesis(string!(")")))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Operation(Some(Operations::Equals)))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Number(5))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Variable(string!("x")))));
