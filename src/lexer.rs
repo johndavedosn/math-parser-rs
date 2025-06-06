@@ -29,10 +29,26 @@ pub enum Tokens {
     #[token(")")]
     CloseParan
 }
-
+pub fn lex(input: &str) -> Vec<Tokens>{
+    let mut tokens: Vec<Tokens> = Vec::new();
+    let mut lexer = Tokens::lexer(input);
+    while let Some(token) = lexer.next() {
+        match token {
+            Ok(tk) => {
+                tokens.push(tk);
+            },
+            Err(_) => {
+                // I still need to figure out what to do here.
+            }
+        }
+    }
+    tokens
+}
 pub mod tests {
     #[allow(unused_imports)]
     use logos::Logos;
+    #[allow(unused_imports)]
+    use crate::lexer::lex;
 
     #[cfg(test)]
     use super::Tokens;
@@ -63,5 +79,12 @@ pub mod tests {
         assert_eq!(lex.next(), Some(Ok(Tokens::Subtraction)));
         assert_eq!(lex.next(), Some(Ok(Tokens::Number(4))));
 
+    }
+    #[test]
+    pub fn test_lexer_3() {
+        let input = "f(x) = 5x^2 + 3 - 4";
+        let expected_tokens = vec![Tokens::Variable(string!("f")), Tokens::OpenParan, Tokens::Variable(string!("x")), Tokens::CloseParan, Tokens::Equals, Tokens::Number(5), Tokens::Variable(string!("x")), Tokens::Exponantiation, Tokens::Number(2), Tokens::Addition, Tokens::Number(3), Tokens::Subtraction, Tokens::Number(4)];
+        assert_eq!(lex(input), expected_tokens);
+ 
     }
 }
