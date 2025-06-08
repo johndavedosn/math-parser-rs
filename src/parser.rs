@@ -3,7 +3,7 @@ use crate::lexer::Tokens;
 #[derive(PartialEq)]
 pub enum Assoc {
     Left,
-    Right
+    Right,
 }
 fn precedence(token: &Tokens) -> Option<(u8, Assoc)> {
     match token {
@@ -11,7 +11,7 @@ fn precedence(token: &Tokens) -> Option<(u8, Assoc)> {
         Tokens::Multiplication | Tokens::Division => Some((3, Assoc::Left)),
         Tokens::Exponantiation => Some((4, Assoc::Right)),
         _ => None,
-    } 
+    }
 }
 pub fn shunting_yard(tokens: Vec<Tokens>) -> Vec<Tokens> {
     let mut output: Vec<Tokens> = Vec::new();
@@ -30,9 +30,7 @@ pub fn shunting_yard(tokens: Vec<Tokens>) -> Vec<Tokens> {
                 while let Some(top) = ops.last() {
                     if let Some((prec1, assoc1)) = precedence(&token) {
                         if let Some((prec2, _)) = precedence(top) {
-                            if (assoc1 == Assoc::Left && prec1 <= prec2)
-                                || (assoc1 == Assoc::Right && prec1 < prec2)
-                            {
+                            if (prec2 > prec1) || (prec2 == prec1 && assoc1 == Assoc::Left) {
                                 output.push(ops.pop().unwrap());
                                 continue;
                             }
@@ -65,16 +63,15 @@ pub fn shunting_yard(tokens: Vec<Tokens>) -> Vec<Tokens> {
         output.push(op);
     }
 
-
     output
 }
 #[cfg(test)]
 pub mod tests {
     #![allow(unused)]
-    use crate::parser::shunting_yard;
     use crate::lexer::Tokens;
+    use crate::parser::shunting_yard;
     #[test]
-    pub fn test_parser_1(){
+    pub fn test_parser_1() {
         let expr = vec![
             Tokens::Number(3),
             Tokens::Addition,
@@ -86,18 +83,18 @@ pub mod tests {
             Tokens::Number(1),
             Tokens::Subtraction,
             Tokens::Number(5),
-            Tokens::CloseParan
+            Tokens::CloseParan,
         ];
         let expected_out = vec![
             Tokens::Number(3),
             Tokens::Number(4),
             Tokens::Number(2),
-           Tokens::Number(1),
+            Tokens::Number(1),
             Tokens::Number(5),
-           Tokens::Subtraction,
-           Tokens::Exponantiation,
-           Tokens::Multiplication,
-            Tokens::Addition
+            Tokens::Subtraction,
+            Tokens::Exponantiation,
+            Tokens::Multiplication,
+            Tokens::Addition,
         ];
         assert_eq!(expected_out, shunting_yard(expr));
     }

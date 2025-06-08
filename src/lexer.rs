@@ -1,9 +1,7 @@
 use logos::Logos;
 #[macro_export]
 macro_rules! string {
-    ($str:literal) => {{
-        $str.to_string()
-    }}
+    ($str:literal) => {{ $str.to_string() }};
 }
 #[derive(Logos, Debug, PartialEq)]
 #[logos(skip r"[ \t\n\f]+")]
@@ -27,16 +25,16 @@ pub enum Tokens {
     #[token("(")]
     OpenParan,
     #[token(")")]
-    CloseParan
+    CloseParan,
 }
-pub fn lex(input: &str) -> Vec<Tokens>{
+pub fn lex(input: &str) -> Vec<Tokens> {
     let mut tokens: Vec<Tokens> = Vec::new();
     let mut lexer = Tokens::lexer(input);
     while let Some(token) = lexer.next() {
         match token {
             Ok(tk) => {
                 tokens.push(tk);
-            },
+            }
             Err(_) => {
                 // I still need to figure out what to do here.
             }
@@ -47,15 +45,15 @@ pub fn lex(input: &str) -> Vec<Tokens>{
 #[cfg(test)]
 pub mod tests {
     #[allow(unused_imports)]
-    use logos::Logos;
-    #[allow(unused_imports)]
     use crate::lexer::lex;
+    #[allow(unused_imports)]
+    use logos::Logos;
 
     use super::Tokens;
-    #[test] 
+    #[test]
     pub fn test_lexer_1() {
         let mut lex = Tokens::lexer("1 + 1 = 3x");
-        assert_eq!(lex.next(),  Some(Ok(Tokens::Number(1))));
+        assert_eq!(lex.next(), Some(Ok(Tokens::Number(1))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Addition)));
         assert_eq!(lex.next(), Some(Ok(Tokens::Number(1))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Equals)));
@@ -78,13 +76,25 @@ pub mod tests {
         assert_eq!(lex.next(), Some(Ok(Tokens::Number(3))));
         assert_eq!(lex.next(), Some(Ok(Tokens::Subtraction)));
         assert_eq!(lex.next(), Some(Ok(Tokens::Number(4))));
-
     }
     #[test]
     pub fn test_lexer_3() {
         let input = "f(x) = 5x^2 + 3 - 4";
-        let expected_tokens = vec![Tokens::Variable(string!("f")), Tokens::OpenParan, Tokens::Variable(string!("x")), Tokens::CloseParan, Tokens::Equals, Tokens::Number(5), Tokens::Variable(string!("x")), Tokens::Exponantiation, Tokens::Number(2), Tokens::Addition, Tokens::Number(3), Tokens::Subtraction, Tokens::Number(4)];
+        let expected_tokens = vec![
+            Tokens::Variable(string!("f")),
+            Tokens::OpenParan,
+            Tokens::Variable(string!("x")),
+            Tokens::CloseParan,
+            Tokens::Equals,
+            Tokens::Number(5),
+            Tokens::Variable(string!("x")),
+            Tokens::Exponantiation,
+            Tokens::Number(2),
+            Tokens::Addition,
+            Tokens::Number(3),
+            Tokens::Subtraction,
+            Tokens::Number(4),
+        ];
         assert_eq!(lex(input), expected_tokens);
- 
     }
 }
