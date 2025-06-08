@@ -44,13 +44,13 @@ pub fn lex(input: &str) -> Vec<Tokens>{
     }
     tokens
 }
+#[cfg(test)]
 pub mod tests {
     #[allow(unused_imports)]
     use logos::Logos;
     #[allow(unused_imports)]
     use crate::lexer::lex;
 
-    #[cfg(test)]
     use super::Tokens;
     #[test] 
     pub fn test_lexer_1() {
